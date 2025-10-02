@@ -1,45 +1,57 @@
 #!/bin/bash
 
-echo "🚀 Setting up LinkedIn Video Downloader..."
+# Exit script on error
+set -e
 
-# Step 1: Create virtual environment
-if [ ! -d "venv" ]; then
-  echo "📦 Creating virtual environment..."
-  python -m venv venv
+echo "🚀 Setting up LinkedIn Video Downloader Project..."
+
+# Check if Python is installed
+if ! command -v python3 &> /dev/null; then
+    echo "⚠️ Python3 is not installed. Installing..."
+    sudo apt update
+    sudo apt install -y python3 python3-pip python3-venv
+else
+    echo "✅ Python3 is already installed."
 fi
 
-# Step 2: Activate virtual environment
-echo "🔑 Activating virtual environment..."
-source venv/Scripts/activate  # For Windows Git Bash
-# For Linux/Mac use: source venv/bin/activate
+# Create virtual environment
+if [ ! -d "venv" ]; then
+    echo "📦 Creating virtual environment..."
+    python3 -m venv venv
+else
+    echo "✅ Virtual environment already exists."
+fi
 
-# Step 3: Upgrade pip
+# Activate virtual environment
+echo "🔑 Activating virtual environment..."
+source venv/bin/activate
+
+# Upgrade pip
 echo "⬆️ Upgrading pip..."
 pip install --upgrade pip
 
-# Step 4: Install dependencies
+# Install dependencies
 echo "📥 Installing dependencies..."
-pip install -r requirements.txt
+pip install flask yt-dlp requests
 
-# Step 5: Create necessary folders
-echo "📂 Creating folders..."
-mkdir -p downloads
-mkdir -p static
-mkdir -p templates
+# Create necessary folders
+echo "📂 Creating project folders..."
+mkdir -p downloads static templates
 
-# Step 6: Reminder for environment variables
-echo "⚙️ Creating .env file (if missing)..."
+# Create .env file if it doesn't exist
 if [ ! -f ".env" ]; then
-  cat <<EOT >> .env
-# Flask settings
+    echo "🔧 Creating .env file..."
+    cat <<EOT >> .env
+FLASK_APP=app.py
 FLASK_ENV=development
-PORT=5000
-
-# App settings
 DOWNLOAD_DIR=downloads
 EOT
-  echo "✅ .env file created with default values"
+else
+    echo "✅ .env file already exists."
 fi
 
-echo "✅ Setup complete!"
-echo "👉 To run your app: source venv/Scripts/activate && python app.py"
+echo "✅ Setup complete! Run the app with: "
+echo "-----------------------------------"
+echo "source venv/bin/activate"
+echo "python app.py"
+echo "-----------------------------------"
