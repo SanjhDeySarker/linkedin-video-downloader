@@ -7,6 +7,7 @@ app = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def home():
+    # SEO-optimized homepage
     return render_template("index.html")
 
 @app.route("/download", methods=["POST"])
@@ -19,6 +20,7 @@ def download():
         downloader = LinkedInVideoDownloader(url)
         output_dir = downloader.download_video()
 
+        # Find the latest file in downloads/
         files = sorted(
             [os.path.join(output_dir, f) for f in os.listdir(output_dir)],
             key=os.path.getmtime,
@@ -32,16 +34,6 @@ def download():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-# 🔹 Serve sitemap.xml
-@app.route("/sitemap.xml", methods=["GET"])
-def sitemap():
-    return send_file("static/sitemap.xml", mimetype="application/xml")
-
-# 🔹 Serve robots.txt
-@app.route("/robots.txt", methods=["GET"])
-def robots():
-    return send_file("static/robots.txt", mimetype="text/plain")
 
 if __name__ == "__main__":
     os.makedirs("downloads", exist_ok=True)
